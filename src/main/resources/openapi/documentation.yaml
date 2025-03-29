@@ -1,0 +1,556 @@
+openapi: 3.0.0
+info:
+  title: Music App API
+  version: 1.0.0
+  description: API documentation for the Music App backend
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.musicapp.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: Authentication endpoints
+  - name: Users
+    description: User management endpoints
+  - name: Artists
+    description: Artist management endpoints
+  - name: Songs
+    description: Song management endpoints
+
+components:
+  schemas:
+    UserCreateRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+        name:
+          type: string
+          example: John Doe
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        name:
+          type: string
+          example: John Doe
+        profilePicture:
+          type: string
+          nullable: true
+          example: https://example.com/profile.jpg
+        createdAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        updatedAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    ArtistCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Artist Name
+        bio:
+          type: string
+          nullable: true
+          example: Artist biography
+        profilePicture:
+          type: string
+          nullable: true
+          example: https://example.com/artist.jpg
+
+    ArtistUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Updated Artist Name
+        bio:
+          type: string
+          nullable: true
+          example: Updated biography
+        profilePicture:
+          type: string
+          nullable: true
+          example: https://example.com/updated-artist.jpg
+
+    ArtistResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: Artist Name
+        bio:
+          type: string
+          nullable: true
+          example: Artist biography
+        profilePicture:
+          type: string
+          nullable: true
+          example: https://example.com/artist.jpg
+        createdAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        updatedAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    SongCreateRequest:
+      type: object
+      required:
+        - title
+        - artistId
+        - duration
+        - audioUrl
+      properties:
+        title:
+          type: string
+          example: Song Title
+        artistId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        duration:
+          type: integer
+          description: Duration in seconds
+          example: 180
+        audioUrl:
+          type: string
+          example: https://example.com/song.mp3
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/cover.jpg
+        genre:
+          type: string
+          nullable: true
+          example: Pop
+        releaseDate:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    SongUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Updated Song Title
+        duration:
+          type: integer
+          description: Duration in seconds
+          example: 180
+        audioUrl:
+          type: string
+          example: https://example.com/updated-song.mp3
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/updated-cover.jpg
+        genre:
+          type: string
+          nullable: true
+          example: Rock
+        releaseDate:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    SongResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          example: Song Title
+        artist:
+          $ref: '#/components/schemas/ArtistResponse'
+        duration:
+          type: integer
+          description: Duration in seconds
+          example: 180
+        audioUrl:
+          type: string
+          example: https://example.com/song.mp3
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/cover.jpg
+        genre:
+          type: string
+          nullable: true
+          example: Pop
+        releaseDate:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        createdAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        updatedAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid input
+        '409':
+          description: Email already exists
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+
+  /artists:
+    get:
+      summary: Get all artists
+      tags: [Artists]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of artists to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Number of artists to skip
+      responses:
+        '200':
+          description: List of artists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArtistResponse'
+    post:
+      summary: Create a new artist
+      tags: [Artists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistCreateRequest'
+      responses:
+        '201':
+          description: Artist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistResponse'
+        '401':
+          description: Unauthorized
+
+  /artists/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Artist ID
+    get:
+      summary: Get artist by ID
+      tags: [Artists]
+      responses:
+        '200':
+          description: Artist details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistResponse'
+        '404':
+          description: Artist not found
+    put:
+      summary: Update artist
+      tags: [Artists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtistUpdateRequest'
+      responses:
+        '200':
+          description: Artist updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Artist not found
+    delete:
+      summary: Delete artist
+      tags: [Artists]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Artist deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Artist not found
+
+  /songs:
+    get:
+      summary: Get all songs
+      tags: [Songs]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of songs to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Number of songs to skip
+      responses:
+        '200':
+          description: List of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongResponse'
+    post:
+      summary: Create a new song
+      tags: [Songs]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongCreateRequest'
+      responses:
+        '201':
+          description: Song created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Artist not found
+
+  /songs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Song ID
+    get:
+      summary: Get song by ID
+      tags: [Songs]
+      responses:
+        '200':
+          description: Song details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+        '404':
+          description: Song not found
+    put:
+      summary: Update song
+      tags: [Songs]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongUpdateRequest'
+      responses:
+        '200':
+          description: Song updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Song not found
+    delete:
+      summary: Delete song
+      tags: [Songs]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Song deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Song not found
+
+  /songs/artist/{artistId}:
+    parameters:
+      - name: artistId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Artist ID
+    get:
+      summary: Get songs by artist
+      tags: [Songs]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of songs to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Number of songs to skip
+      responses:
+        '200':
+          description: List of songs by artist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongResponse'
+        '404':
+          description: Artist not found 
