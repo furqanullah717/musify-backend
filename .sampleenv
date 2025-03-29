@@ -1,0 +1,17 @@
+# JWT Configuration
+JWT_SECRET=your-super-secret-key-change-in-production
+JWT_ISSUER=music-app
+JWT_AUDIENCE=music-app-users
+JWT_REALM=music-app
+JWT_EXPIRATION=86400000 # 24 hours in milliseconds
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=music_app
+DB_USER=root
+DB_PASSWORD=root
+
+# Server Configuration
+SERVER_HOST=0.0.0.0
+SERVER_PORT=8080 
