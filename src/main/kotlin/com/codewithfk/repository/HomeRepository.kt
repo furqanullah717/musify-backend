@@ -101,7 +101,7 @@ class HomeRepository(
                     id = UUID.randomUUID().toString(),
                     title = "${artist.name}'s Greatest Hits",
                     artist = artist,
-                    coverImage = "https://ibb.co/mC5NySSs",
+                    coverImage = artist.profilePicture ?: "https://i.ibb.co/DH1PYNdj/album.png",
                     songs = songs,
                     genre = songs.firstOrNull()?.genre ?: "Pop",
                     releaseDate = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000

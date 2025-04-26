@@ -12,7 +12,7 @@ class DatabaseSeeder(
     private val songRepository: SongRepository
 ) {
     private val localAudioUrl = "https://esljzyhhpgljrbwzxydw.supabase.co/storage/v1/object/public/food_hub_bucket//Egzod%20-%20Royalty.mp3"
-    private val localCoverImage = "https://ibb.co/HfKLC0Z9"
+    private val localCoverImage = "https://i.ibb.co/5WhKj22D/Rectangle-19.png"
 
     fun seed() {
         if (artistRepository.getAllArtists(1, 0).isEmpty()) {
@@ -28,27 +28,27 @@ class DatabaseSeeder(
             ArtistCreateRequest(
                 name = "Ed Sheeran",
                 bio = "English singer-songwriter known for his soulful voice and acoustic guitar",
-                profilePicture = "https://ibb.co/ymgM8sPk"
+                profilePicture = "https://i.ibb.co/6cDp4swt/ed.png"
             ),
             ArtistCreateRequest(
                 name = "Taylor Swift",
                 bio = "American singer-songwriter known for her narrative songwriting",
-                profilePicture = "https://ibb.co/h1h61GBx"
+                profilePicture = "https://i.ibb.co/zHjMH3XW/tylor.png"
             ),
             ArtistCreateRequest(
                 name = "Arijit Singh",
                 bio = "Indian playback singer known for his soulful voice",
-                profilePicture = "https://ibb.co/8LNj28fX"
+                profilePicture = "https://i.ibb.co/Kpb97yfm/arjit.png"
             ),
             ArtistCreateRequest(
                 name = "Ariana Grande",
                 bio = "American singer known for her wide vocal range",
-                profilePicture = "https://ibb.co/Kjrh6X4J"
+                profilePicture = "https://i.ibb.co/pvLw2xVS/ariana.png"
             ),
             ArtistCreateRequest(
                 name = "Atif Aslam",
                 bio = "Pakistani singer known for his powerful vocals",
-                profilePicture = "https://ibb.co/W4srZkbV"
+                profilePicture = "https://i.ibb.co/XrVn17hY/atif.png"
             )
         )
         dummyArtists.forEach { artistRepository.createArtist(it.name, it.bio, it.profilePicture) }
@@ -63,7 +63,7 @@ class DatabaseSeeder(
                     artistId = artists[0].id,
                     duration = 235,
                     audioUrl = localAudioUrl,
-                    coverImage = "https://ibb.co/mC5NySSs",
+                    coverImage = "https://i.ibb.co/DH1PYNdj/album.png",
                     genre = "Pop",
                     releaseDate = LocalDateTime.now().minusYears(6).toEpochSecond(ZoneOffset.UTC) * 1000
                 ),
@@ -81,7 +81,7 @@ class DatabaseSeeder(
                     artistId = artists[2].id,
                     duration = 198,
                     audioUrl = localAudioUrl,
-                    coverImage = "https://ibb.co/mC5NySSs",
+                    coverImage = "https://i.ibb.co/DH1PYNdj/album.png",
                     genre = "Bollywood",
                     releaseDate = LocalDateTime.now().minusYears(5).toEpochSecond(ZoneOffset.UTC) * 1000
                 ),
@@ -99,7 +99,7 @@ class DatabaseSeeder(
                     artistId = artists[4].id,
                     duration = 200,
                     audioUrl = localAudioUrl,
-                    coverImage = "https://ibb.co/mC5NySSs",
+                    coverImage = "https://i.ibb.co/DH1PYNdj/album.png",
                     genre = "Bollywood",
                     releaseDate = LocalDateTime.now().minusYears(3).toEpochSecond(ZoneOffset.UTC) * 1000
                 )
