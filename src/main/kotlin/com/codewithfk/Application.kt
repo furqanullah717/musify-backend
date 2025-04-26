@@ -9,6 +9,7 @@ import com.codewithfk.repository.ArtistRepository
 import com.codewithfk.repository.SongRepository
 import com.codewithfk.routes.artistRoutes
 import com.codewithfk.routes.authRoutes
+import com.codewithfk.routes.homeRoutes
 import com.codewithfk.routes.songRoutes
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -49,5 +50,6 @@ fun Application.module() {
         authRoutes()
         artistRoutes()
         songRoutes()
+        homeRoutes()
     }
 } 

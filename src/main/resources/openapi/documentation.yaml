@@ -19,6 +19,8 @@ tags:
     description: Artist management endpoints
   - name: Songs
     description: Song management endpoints
+  - name: Home
+    description: Home page data endpoints
 
 components:
   schemas:
@@ -260,6 +262,180 @@ components:
           format: int64
           description: Epoch milliseconds
           example: 1647123456789
+
+    HomeResponse:
+      type: object
+      properties:
+        continueListening:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              artist:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  bio:
+                    type: string
+                  profilePicture:
+                    type: string
+                  createdAt:
+                    type: integer
+                    format: int64
+                  updatedAt:
+                    type: integer
+                    format: int64
+              duration:
+                type: integer
+              audioUrl:
+                type: string
+              coverImage:
+                type: string
+              genre:
+                type: string
+              releaseDate:
+                type: integer
+                format: int64
+              createdAt:
+                type: integer
+                format: int64
+              updatedAt:
+                type: integer
+                format: int64
+        topMixes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              artist:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  bio:
+                    type: string
+                  profilePicture:
+                    type: string
+                  createdAt:
+                    type: integer
+                    format: int64
+                  updatedAt:
+                    type: integer
+                    format: int64
+              coverImage:
+                type: string
+              songs:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    artist:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        bio:
+                          type: string
+                        profilePicture:
+                          type: string
+                        createdAt:
+                          type: integer
+                          format: int64
+                        updatedAt:
+                          type: integer
+                          format: int64
+                    duration:
+                      type: integer
+                    audioUrl:
+                      type: string
+                    coverImage:
+                      type: string
+                    genre:
+                      type: string
+                    releaseDate:
+                      type: integer
+                      format: int64
+                    createdAt:
+                      type: integer
+                      format: int64
+                    updatedAt:
+                      type: integer
+                      format: int64
+              genre:
+                type: string
+              releaseDate:
+                type: integer
+                format: int64
+        recommendedSongs:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              artist:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  bio:
+                    type: string
+                  profilePicture:
+                    type: string
+                  createdAt:
+                    type: integer
+                    format: int64
+                  updatedAt:
+                    type: integer
+                    format: int64
+              duration:
+                type: integer
+              audioUrl:
+                type: string
+              coverImage:
+                type: string
+              genre:
+                type: string
+              releaseDate:
+                type: integer
+                format: int64
+              createdAt:
+                type: integer
+                format: int64
+              updatedAt:
+                type: integer
+                format: int64
 
   securitySchemes:
     bearerAuth:
@@ -553,4 +729,82 @@ paths:
                 items:
                   $ref: '#/components/schemas/SongResponse'
         '404':
-          description: Artist not found 
+          description: Artist not found
+
+  /home:
+    get:
+      summary: Get home page data
+      tags: [Home]
+      description: Returns continue listening, top mixes, and recommended songs
+      responses:
+        '200':
+          description: Home page data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HomeResponse'
+              example:
+                continueListening:
+                  - id: "123e4567-e89b-12d3-a456-426614174000"
+                    title: "Shape of You"
+                    artist:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      name: "Ed Sheeran"
+                      bio: "English singer-songwriter known for his soulful voice and acoustic guitar"
+                      profilePicture: "https://ibb.co/ymgM8sPk"
+                      createdAt: 1647123456789
+                      updatedAt: 1647123456789
+                    duration: 235
+                    audioUrl: "https://esljzyhhpgljrbwzxydw.supabase.co/storage/v1/object/public/food_hub_bucket//Egzod%20-%20Royalty.mp3"
+                    coverImage: "https://ibb.co/mC5NySSs"
+                    genre: "Pop"
+                    releaseDate: 1647123456789
+                    createdAt: 1647123456789
+                    updatedAt: 1647123456789
+                topMixes:
+                  - id: "123e4567-e89b-12d3-a456-426614174000"
+                    title: "Ed Sheeran's Greatest Hits"
+                    artist:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      name: "Ed Sheeran"
+                      bio: "English singer-songwriter known for his soulful voice and acoustic guitar"
+                      profilePicture: "https://ibb.co/ymgM8sPk"
+                      createdAt: 1647123456789
+                      updatedAt: 1647123456789
+                    coverImage: "https://ibb.co/mC5NySSs"
+                    songs:
+                      - id: "123e4567-e89b-12d3-a456-426614174000"
+                        title: "Shape of You"
+                        artist:
+                          id: "123e4567-e89b-12d3-a456-426614174000"
+                          name: "Ed Sheeran"
+                          bio: "English singer-songwriter known for his soulful voice and acoustic guitar"
+                          profilePicture: "https://ibb.co/ymgM8sPk"
+                          createdAt: 1647123456789
+                          updatedAt: 1647123456789
+                        duration: 235
+                        audioUrl: "https://esljzyhhpgljrbwzxydw.supabase.co/storage/v1/object/public/food_hub_bucket//Egzod%20-%20Royalty.mp3"
+                        coverImage: "https://ibb.co/mC5NySSs"
+                        genre: "Pop"
+                        releaseDate: 1647123456789
+                        createdAt: 1647123456789
+                        updatedAt: 1647123456789
+                    genre: "Pop"
+                    releaseDate: 1647123456789
+                recommendedSongs:
+                  - id: "123e4567-e89b-12d3-a456-426614174000"
+                    title: "Anti-Hero"
+                    artist:
+                      id: "123e4567-e89b-12d3-a456-426614174000"
+                      name: "Taylor Swift"
+                      bio: "American singer-songwriter known for her narrative songwriting"
+                      profilePicture: "https://ibb.co/h1h61GBx"
+                      createdAt: 1647123456789
+                      updatedAt: 1647123456789
+                    duration: 200
+                    audioUrl: "https://esljzyhhpgljrbwzxydw.supabase.co/storage/v1/object/public/food_hub_bucket//Egzod%20-%20Royalty.mp3"
+                    coverImage: "https://ibb.co/mC5NySSs"
+                    genre: "Pop"
+                    releaseDate: 1647123456789
+                    createdAt: 1647123456789
+                    updatedAt: 1647123456789 
