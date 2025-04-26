@@ -12,7 +12,7 @@ object DatabaseConfig {
         val config = HikariConfig().apply {
             driverClassName = "com.mysql.cj.jdbc.Driver"
             jdbcUrl =
-                "jdbc:mysql://${AppConfig.DB_HOST}:${AppConfig.DB_PORT}/${AppConfig.DB_NAME}?useSSL=false&serverTimezone=UTC"
+                "jdbc:mysql://${AppConfig.DB_HOST}:${AppConfig.DB_PORT}/${AppConfig.DB_NAME}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
             username = AppConfig.DB_USER
             password = AppConfig.DB_PASSWORD
             maximumPoolSize = 3

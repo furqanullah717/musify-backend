@@ -3,7 +3,10 @@ package com.codewithfk
 import com.codewithfk.config.AppConfig
 import com.codewithfk.config.JwtConfig
 import com.codewithfk.database.DatabaseConfig
-import com.codewithfk.plugins.configureCORS
+import com.codewithfk.database.DatabaseSeeder
+import com.codewithfk.plugins.*
+import com.codewithfk.repository.ArtistRepository
+import com.codewithfk.repository.SongRepository
 import com.codewithfk.routes.artistRoutes
 import com.codewithfk.routes.authRoutes
 import com.codewithfk.routes.songRoutes
@@ -18,7 +21,11 @@ fun Application.module() {
     // Initialize Database
     DatabaseConfig.init()
 
-    // Configure JWT Authentication
+    // Seed database with initial data
+    val artistRepository = ArtistRepository()
+    val songRepository = SongRepository(artistRepository)
+    DatabaseSeeder(artistRepository, songRepository).seed()
+
     install(Authentication) {
         jwt {
             verifier(JwtConfig.makeJwtVerifier())
