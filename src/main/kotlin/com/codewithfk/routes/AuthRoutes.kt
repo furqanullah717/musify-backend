@@ -10,9 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.mindrot.jbcrypt.BCrypt
 
-fun Route.authRoutes() {
-    val userRepository = UserRepository()
-
+fun Route.authRoutes(userRepository: UserRepository, jwtConfig: JwtConfig) {
     route("/auth") {
         post("/register") {
             val request = call.receive<UserCreateRequest>()
@@ -22,7 +20,7 @@ fun Route.authRoutes() {
             if (existingUser != null) {
                 call.respond(
                     HttpStatusCode.Conflict,
-                    mapOf("error" to "User with this email already exists")
+                    ErrorResponse("User with this email already exists")
                 )
                 return@post
             }
@@ -35,7 +33,7 @@ fun Route.authRoutes() {
                 name = request.name
             )
 
-            val token = JwtConfig.makeJwtToken(user.id)
+            val token = jwtConfig.makeToken(user.id, user.email)
             call.respond(HttpStatusCode.Created, AuthResponse(token, user))
         }
 
@@ -47,7 +45,7 @@ fun Route.authRoutes() {
             if (user == null) {
                 call.respond(
                     HttpStatusCode.Unauthorized,
-                    mapOf("error" to "Invalid email or password")
+                    ErrorResponse("Invalid email or password")
                 )
                 return@post
             }
@@ -56,12 +54,12 @@ fun Route.authRoutes() {
             if (!BCrypt.checkpw(request.password, user.password)) {
                 call.respond(
                     HttpStatusCode.Unauthorized,
-                    mapOf("error" to "Invalid email or password")
+                    ErrorResponse("Invalid email or password")
                 )
                 return@post
             }
 
-            val token = JwtConfig.makeJwtToken(user.id)
+            val token = jwtConfig.makeToken(user.id, user.email)
             call.respond(
                 HttpStatusCode.OK, AuthResponse(
                     token, UserResponse(

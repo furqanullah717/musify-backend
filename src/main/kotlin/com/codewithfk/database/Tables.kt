@@ -47,4 +47,33 @@ object Songs : Table() {
     init {
         foreignKey(artistId to Artists.id)
     }
+}
+
+object Playlists : Table() {
+    val id: Column<String> = varchar("id", 36)
+    val name: Column<String> = varchar("name", 255)
+    val description: Column<String?> = text("description").nullable()
+    val coverImage: Column<String?> = varchar("cover_image", 255).nullable()
+    val userId: Column<String> = varchar("user_id", 36)
+    val createdAt: Column<LocalDateTime> = datetime("created_at")
+    val updatedAt: Column<LocalDateTime> = datetime("updated_at")
+
+    override val primaryKey = PrimaryKey(id)
+    init {
+        foreignKey(userId to Users.id)
+    }
+}
+
+object PlaylistSongs : Table() {
+    val id: Column<String> = varchar("id", 36)
+    val playlistId: Column<String> = varchar("playlist_id", 36)
+    val songId: Column<String> = varchar("song_id", 36)
+    val addedAt: Column<LocalDateTime> = datetime("added_at").default(LocalDateTime.now())
+    
+    override val primaryKey = PrimaryKey(id)
+    init {
+        foreignKey(playlistId to Playlists.id)
+        foreignKey(songId to Songs.id)
+        uniqueIndex("unique_playlist_song", playlistId, songId)
+    }
 } 

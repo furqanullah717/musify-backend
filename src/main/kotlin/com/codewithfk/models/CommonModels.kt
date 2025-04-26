@@ -9,4 +9,11 @@ data class PaginatedResponse<T>(
     val page: Int,
     val pageSize: Int,
     val totalPages: Int
+)
+
+@Serializable
+data class ErrorResponse(
+    val message: String,
+    val code: Int? = null,
+    val details: Map<String, String>? = null
 ) 

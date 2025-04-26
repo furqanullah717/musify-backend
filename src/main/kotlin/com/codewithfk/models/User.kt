@@ -1,5 +1,6 @@
 package com.codewithfk.models
 
+import io.ktor.server.auth.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -40,4 +41,6 @@ data class UserLoginRequest(
 data class AuthResponse(
     val token: String,
     val user: UserResponse
-) 
+)
+
+class UserPrincipal(val id: String) : Principal 

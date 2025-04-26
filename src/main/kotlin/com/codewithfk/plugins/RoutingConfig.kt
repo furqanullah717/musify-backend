@@ -6,12 +6,3 @@ import com.codewithfk.routes.homeRoutes
 import com.codewithfk.routes.songRoutes
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
-
-fun Application.configureRouting() {
-    routing {
-        authRoutes()
-        artistRoutes()
-        songRoutes()
-        homeRoutes()
-    }
-} 

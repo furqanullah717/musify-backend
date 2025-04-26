@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object DatabaseConfig {
+class DatabaseConfig {
     fun init() {
         val config = HikariConfig().apply {
             driverClassName = "com.mysql.cj.jdbc.Driver"
