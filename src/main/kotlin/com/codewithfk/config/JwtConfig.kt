@@ -6,10 +6,12 @@ import com.auth0.jwt.interfaces.JWTVerifier
 import io.ktor.server.auth.jwt.*
 import java.util.*
 
-class JwtConfig(private val secret: String= AppConfig.JWT_SECRET) {
-    private val validityInMs = 36_000_00 * 10 // 10 hours
-    val issuer = "music-app"
-    val audience = "music-app-users"
+class JwtConfig {
+    private val secret = AppConfig.JWT_SECRET
+    private val validityInMs = AppConfig.JWT_EXPIRATION
+    val issuer = AppConfig.JWT_ISSUER
+    val audience = AppConfig.JWT_AUDIENCE
+    val realm = AppConfig.JWT_REALM
     
     val verifier: JWTVerifier = JWT
         .require(Algorithm.HMAC256(secret))

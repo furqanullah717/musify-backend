@@ -12,9 +12,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 fun Route.playlistRoutes(playlistRepository: PlaylistRepository) {
-    authenticate {
-        // Get all playlists for the authenticated user
-        get("/playlists") {
+         get("/playlists") {
             val userId = call.principal<UserPrincipal>()?.id
                 ?: return@get call.respond(HttpStatusCode.Unauthorized, ErrorResponse("Unauthorized"))
 
@@ -155,7 +153,7 @@ fun Route.playlistRoutes(playlistRepository: PlaylistRepository) {
                 )
             }
         }
-    }
+
 }
 
 private fun LocalDateTime.toEpochMilli(): Long {

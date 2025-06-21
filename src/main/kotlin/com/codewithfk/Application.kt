@@ -5,6 +5,7 @@ import com.codewithfk.database.DatabaseConfig
 import com.codewithfk.database.DatabaseSeeder
 import com.codewithfk.database.PlaylistSongs
 import com.codewithfk.database.Playlists
+import com.codewithfk.models.ErrorResponse
 import com.codewithfk.models.UserPrincipal
 import com.codewithfk.plugins.configureCORS
 import com.codewithfk.repository.ArtistRepository
@@ -67,22 +68,32 @@ fun Application.module() {
     
     // Configure authentication
     install(Authentication) {
-        jwt {
+        jwt("jwt") {
+            realm = jwtConfig.realm
             verifier(jwtConfig.verifier)
             validate { credential ->
-                if (credential.payload.audience.contains(jwtConfig.audience)) {
-                    val id = credential.payload.getClaim("id").asString()
-                    if (id != null) {
-                        UserPrincipal(id)
+                try {
+                    if (credential.payload.audience.contains(jwtConfig.audience)) {
+                        val id = credential.payload.getClaim("id").asString()
+                        val email = credential.payload.getClaim("email").asString()
+                        if (id != null && email != null) {
+                            UserPrincipal(id)
+                        } else {
+                            null
+                        }
                     } else {
                         null
                     }
-                } else {
+                } catch (e: Exception) {
+                    application.log.error("JWT validation error: ${e.message}")
                     null
                 }
             }
-            challenge { _, _ ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+            challenge { defaultScheme, realm ->
+                call.respond(
+                    HttpStatusCode.Unauthorized, 
+                    ErrorResponse("Token is not valid or has expired. Please provide a valid Bearer token.")
+                )
             }
         }
     }
@@ -97,9 +108,12 @@ fun Application.module() {
     // Configure Routing
     routing {
         authRoutes(userRepository, jwtConfig)
-        artistRoutes()
-        songRoutes()
-        homeRoutes()
-        playlistRoutes(playlistRepository)
+        authenticate("jwt"){
+            artistRoutes()
+            songRoutes()
+            homeRoutes()
+            playlistRoutes(playlistRepository)
+        }
+
     }
 } 
