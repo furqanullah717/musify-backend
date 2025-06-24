@@ -19,6 +19,8 @@ tags:
     description: Artist management endpoints
   - name: Songs
     description: Song management endpoints
+  - name: Playlists
+    description: Playlist management endpoints
   - name: Home
     description: Home page data endpoints
 
@@ -262,6 +264,159 @@ components:
           format: int64
           description: Epoch milliseconds
           example: 1647123456789
+
+    PlaylistCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: My Awesome Playlist
+        description:
+          type: string
+          nullable: true
+          example: A collection of my favorite songs
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/playlist-cover.jpg
+        songIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          default: []
+          example: ["123e4567-e89b-12d3-a456-426614174000", "987fcdeb-51a2-43d1-9f12-123456789abc"]
+
+    PlaylistUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Updated Playlist Name
+        description:
+          type: string
+          nullable: true
+          example: Updated playlist description
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/updated-cover.jpg
+
+    PlaylistAddSongsRequest:
+      type: object
+      required:
+        - songIds
+      properties:
+        songIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          example: ["123e4567-e89b-12d3-a456-426614174000", "987fcdeb-51a2-43d1-9f12-123456789abc"]
+
+    PlaylistRemoveSongsRequest:
+      type: object
+      required:
+        - songIds
+      properties:
+        songIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          example: ["123e4567-e89b-12d3-a456-426614174000", "987fcdeb-51a2-43d1-9f12-123456789abc"]
+
+    PlaylistResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: My Awesome Playlist
+        description:
+          type: string
+          nullable: true
+          example: A collection of my favorite songs
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/playlist-cover.jpg
+        userId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        songs:
+          type: array
+          items:
+            $ref: '#/components/schemas/SongResponse'
+          default: []
+        createdAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        updatedAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    PlaylistBriefResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: My Awesome Playlist
+        description:
+          type: string
+          nullable: true
+          example: A collection of my favorite songs
+        coverImage:
+          type: string
+          nullable: true
+          example: https://example.com/playlist-cover.jpg
+        userId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        songCount:
+          type: integer
+          example: 25
+        createdAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+        updatedAt:
+          type: integer
+          format: int64
+          description: Epoch milliseconds
+          example: 1647123456789
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Error message
+        code:
+          type: integer
+          nullable: true
+          example: 400
+        details:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
 
     HomeResponse:
       type: object
@@ -730,6 +885,263 @@ paths:
                   $ref: '#/components/schemas/SongResponse'
         '404':
           description: Artist not found
+
+  /playlists:
+    get:
+      summary: Get user's playlists
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Number of playlists to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Number of playlists to skip
+      responses:
+        '200':
+          description: List of user's playlists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaylistBriefResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a new playlist
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistCreateRequest'
+      responses:
+        '201':
+          description: Playlist created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /playlists/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Playlist ID
+    get:
+      summary: Get playlist by ID with all songs
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Playlist details with songs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Playlist not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Missing playlist ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      summary: Update playlist
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistUpdateRequest'
+      responses:
+        '200':
+          description: Playlist updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaylistResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Playlist not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Missing playlist ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete playlist
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Playlist deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Playlist not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Missing playlist ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /playlists/{id}/songs:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Playlist ID
+    post:
+      summary: Add songs to playlist
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistAddSongsRequest'
+      responses:
+        '200':
+          description: Songs added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  songsAdded:
+                    type: integer
+                    example: 3
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Playlist not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Missing playlist ID or no songs provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Remove songs from playlist
+      tags: [Playlists]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaylistRemoveSongsRequest'
+      responses:
+        '200':
+          description: Songs removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  songsRemoved:
+                    type: integer
+                    example: 2
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Playlist not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Missing playlist ID or no songs provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /home:
     get:
