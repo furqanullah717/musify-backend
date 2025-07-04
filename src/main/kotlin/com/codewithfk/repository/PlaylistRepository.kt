@@ -42,31 +42,16 @@ class PlaylistRepository(private val songRepository: SongRepository) {
             .select { (Playlists.id eq id) and (Playlists.userId eq userId) }
             .singleOrNull() ?: return@transaction null
         
-        // Get all songs in this playlist
-        val songs = (PlaylistSongs innerJoin Songs innerJoin Artists)
+        // Get song IDs from playlist_songs table
+        val songIds = PlaylistSongs
             .select { PlaylistSongs.playlistId eq id }
             .orderBy(PlaylistSongs.addedAt)
-            .map { row ->
-                SongResponse(
-                    id = row[Songs.id],
-                    title = row[Songs.title],
-                    artist = ArtistResponse(
-                        id = row[Artists.id],
-                        name = row[Artists.name],
-                        bio = row[Artists.bio],
-                        profilePicture = row[Artists.profilePicture],
-                        createdAt = row[Artists.createdAt].toEpochSecond(ZoneOffset.UTC) * 1000,
-                        updatedAt = row[Artists.updatedAt].toEpochSecond(ZoneOffset.UTC) * 1000
-                    ),
-                    duration = row[Songs.duration],
-                    audioUrl = row[Songs.audioUrl],
-                    coverImage = row[Songs.coverImage],
-                    genre = row[Songs.genre],
-                    releaseDate = row[Songs.releaseDate]?.toEpochSecond(ZoneOffset.UTC)?.times(1000) ?: 0,
-                    createdAt = row[Songs.createdAt].toEpochSecond(ZoneOffset.UTC) * 1000,
-                    updatedAt = row[Songs.updatedAt].toEpochSecond(ZoneOffset.UTC) * 1000
-                )
-            }
+            .map { it[PlaylistSongs.songId] }
+        
+        // Get songs with their artists using the song repository
+        val songs = songIds.mapNotNull { songId ->
+            songRepository.findSongById(songId)
+        }
         
         PlaylistResponse(
             id = playlistRow[Playlists.id],
